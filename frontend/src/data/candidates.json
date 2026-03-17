@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "name": "Alice Thompson",
+    "inputValues": {
+      "emotion": 0.75,
+      "smile": 0.8,
+      "eyeContact": 0.7,
+      "tone": 0.85,
+      "pitch": 0.6,
+      "energy": 0.7,
+      "speechRate": 0.65,
+      "straightFace": 0.4,
+      "fillerWords": 0.8
+    }
+  },
+  {
+    "id": 2,
+    "name": "Bob Martinez",
+    "inputValues": {
+      "emotion": 0.6,
+      "smile": 0.65,
+      "eyeContact": 0.85,
+      "tone": 0.75,
+      "pitch": 0.7,
+      "energy": 0.8,
+      "speechRate": 0.7,
+      "straightFace": 0.65,
+      "fillerWords": 0.7
+    }
+  },
+  {
+    "id": 3,
+    "name": "Carol Lee",
+    "inputValues": {
+      "emotion": 0.8,
+      "smile": 0.9,
+      "eyeContact": 0.6,
+      "tone": 0.8,
+      "pitch": 0.75,
+      "energy": 0.85,
+      "speechRate": 0.8,
+      "straightFace": 0.3,
+      "fillerWords": 0.75
+    }
+  }
+]
