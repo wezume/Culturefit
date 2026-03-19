@@ -4,20 +4,20 @@ import { Briefcase, Target, ChevronRight, Edit3, CheckCircle2, ArrowRight, User,
 const CultureFitScorer = () => {
   // Industry Data
   const industryProfiles = {
-    it_ites: { name: 'IT/ITES', target: [4, 4, 4, 5, 4], dna: 'Technical excellence, agile delivery, performance-focused.' },
-    media_ent: { name: 'Media & Entertainment', target: [4, 5, 3, 5, 3], dna: 'Creative energy, audience-first, trend-setting.' },
-    hospitality: { name: 'Hospitality', target: [3, 5, 5, 2, 4], dna: 'Service excellence, guest focus, warmth & connect.' },
-    transport_aviation: { name: 'Transport & Aviation', target: [4, 3, 5, 3, 5], dna: 'Safety-first, operational precision, high-reliability.' },
-    realestate_inf_const: { name: 'Real Estate, Infrastructure & Construction', target: [3, 4, 5, 2, 5], dna: 'Long-term value, quality-rigor, trust-driven.' },
-    consumer_retail: { name: 'Consumer Goods, Retail & Ecommerce', target: [4, 5, 4, 3, 4], dna: 'Consumer-centric, speed-to-market, convenience-focussed.' },
-    manufacturing_logistics: { name: 'Manufacturing & Logistics', target: [4, 2, 5, 2, 5], dna: 'Process-efficiency, precision-ops, safety-obsessed.' },
-    energy_utilities: { name: 'Energy, Utilities & Public Sector', target: [3, 3, 5, 3, 4], dna: 'Stability-driven, public trust, infrastructural-excellence.' },
-    healthcare_lifesciences: { name: 'Healthcare & Life Sciences', target: [4, 4, 5, 4, 5], dna: 'Patient-centricity, research-rigor, ethical-standard.' },
-    professional_services: { name: 'Professional Services', target: [4, 5, 5, 3, 5], dna: 'Client-success, integrity-led, domain-expertise.' },
-    startups: { name: 'Startups', target: [3, 2, 4, 5, 3], dna: 'Fast-paced, growth-obsessed, disruptive-innovation.' },
-    education_edtech: { name: 'Education & Edtech', target: [5, 5, 4, 4, 3], dna: 'Learner-first, knowledge-driven, outcome-focused.' },
-    bfsi: { name: 'BFSI (Banking, Financial Services & Insurance)', target: [3, 4, 5, 3, 5], dna: 'Security-critical, trust-based, financial-precision.' },
-    others: { name: 'Others', target: [3, 3, 3, 3, 3], dna: 'Versatile, adaptable, cross-functional.' }
+    it_ites: { name: 'IT/ITES', target: [4, 4, 4, 5, 4], fit: 'Technical excellence, agile delivery, performance-focused.' },
+    media_ent: { name: 'Media & Entertainment', target: [4, 5, 3, 5, 3], fit: 'Creative energy, audience-first, trend-setting.' },
+    hospitality: { name: 'Hospitality', target: [3, 5, 5, 2, 4], fit: 'Service excellence, guest focus, warmth & connect.' },
+    transport_aviation: { name: 'Transport & Aviation', target: [4, 3, 5, 3, 5], fit: 'Safety-first, operational precision, high-reliability.' },
+    realestate_inf_const: { name: 'Real Estate, Infrastructure & Construction', target: [3, 4, 5, 2, 5], fit: 'Long-term value, quality-rigor, trust-driven.' },
+    consumer_retail: { name: 'Consumer Goods, Retail & Ecommerce', target: [4, 5, 4, 3, 4], fit: 'Consumer-centric, speed-to-market, convenience-focussed.' },
+    manufacturing_logistics: { name: 'Manufacturing & Logistics', target: [4, 2, 5, 2, 5], fit: 'Process-efficiency, precision-ops, safety-obsessed.' },
+    energy_utilities: { name: 'Energy, Utilities & Public Sector', target: [3, 3, 5, 3, 4], fit: 'Stability-driven, public trust, infrastructural-excellence.' },
+    healthcare_lifesciences: { name: 'Healthcare & Life Sciences', target: [4, 4, 5, 4, 5], fit: 'Patient-centricity, research-rigor, ethical-standard.' },
+    professional_services: { name: 'Professional Services', target: [4, 5, 5, 3, 5], fit: 'Client-success, integrity-led, domain-expertise.' },
+    startups: { name: 'Startups', target: [3, 2, 4, 5, 3], fit: 'Fast-paced, growth-obsessed, disruptive-innovation.' },
+    education_edtech: { name: 'Education & Edtech', target: [5, 5, 4, 4, 3], fit: 'Learner-first, knowledge-driven, outcome-focused.' },
+    bfsi: { name: 'BFSI (Banking, Financial Services & Insurance)', target: [3, 4, 5, 3, 5], fit: 'Security-critical, trust-based, financial-precision.' },
+    others: { name: 'Others', target: [3, 3, 3, 3, 3], fit: 'Versatile, adaptable, cross-functional.' }
   };
 
   const roleDefinitions = {
@@ -351,7 +351,7 @@ const CultureFitScorer = () => {
               <div className="inline-block p-3 bg-indigo-50 text-indigo-600 rounded-2xl mb-6 shadow-sm border border-indigo-100">
                 <Target size={32} />
               </div>
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-6 tracking-tight leading-[1.1]">Define Your <span className="text-indigo-600">Cultural DNA</span></h2>
+              <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-6 tracking-tight leading-[1.1]">Define Your <span className="text-indigo-600">Cultural Fit</span></h2>
               <p className="text-slate-500 text-lg sm:text-xl font-medium leading-relaxed">Select an industry to establish your baseline culture fit requirements and refine by functional area.</p>
             </div>
           )}
@@ -427,7 +427,7 @@ const CultureFitScorer = () => {
                     <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
                       <Edit3 size={16} />
                     </div>
-                    Target Profile
+                    Target area - org culture map
                   </h3>
                   {isAccepted && (
                     <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-100">
@@ -469,7 +469,7 @@ const CultureFitScorer = () => {
                     onClick={() => setIsAccepted(true)}
                     className="w-full mt-10 py-4 rounded-2xl font-black text-[13px] uppercase tracking-widest bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-100"
                   >
-                    Lock DNA Profile <ArrowRight size={16} strokeWidth={3} />
+                    Lock Fit Profile <ArrowRight size={16} strokeWidth={3} />
                   </button>
                 ) : (
                   <button
@@ -495,7 +495,7 @@ const CultureFitScorer = () => {
                     </h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mt-1.5 flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                      {selectedCandidate ? 'Candidate Deep-Scan' : 'Industry DNA Mapping'}
+                      {selectedCandidate ? 'Candidate Deep-Scan' : 'Industry Fit Mapping'}
                     </p>
                   </div>
                   {selectedCandidate && (
@@ -524,12 +524,12 @@ const CultureFitScorer = () => {
                       <div className="w-3.5 h-3.5 rounded-full border-2 border-indigo-500 flex items-center justify-center">
                         <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 opacity-50"></div>
                       </div>
-                      <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Target DNA</span>
+                      <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Target area - org culture map</span>
                     </div>
                     {selectedCandidate && (
                       <div className="flex items-center gap-2.5 animate-in fade-in zoom-in slide-in-from-left-2 transition-all">
                         <div className="w-3.5 h-3.5 rounded-full bg-rose-500 border-2 border-rose-500 shadow-lg shadow-rose-200"></div>
-                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Candidate Signature</span>
+                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">Candidate signature - candidate value map</span>
                       </div>
                     )}
                   </div>
