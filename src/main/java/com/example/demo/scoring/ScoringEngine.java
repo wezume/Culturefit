@@ -16,7 +16,7 @@ public class ScoringEngine {
     @PostConstruct
     public void init() {
         nodes.add(new TeamworkNode());
-        nodes.add(new CustomerFocusNode());
+        nodes.add(new CustomerExcellenceNode());
         nodes.add(new IntegrityNode());
         nodes.add(new InnovationNode());
         nodes.add(new QualityNode());

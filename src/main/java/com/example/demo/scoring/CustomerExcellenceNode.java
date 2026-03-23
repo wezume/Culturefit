@@ -2,7 +2,7 @@ package com.example.demo.scoring;
 
 import java.util.Map;
 
-public class CustomerFocusNode implements ScoringNode {
+public class CustomerExcellenceNode implements ScoringNode {
     @Override
     public double calculate(Map<String, Double> signals) {
         double emotion = signals.getOrDefault("emotion", 0.0);
@@ -21,6 +21,6 @@ public class CustomerFocusNode implements ScoringNode {
 
     @Override
     public String getTraitName() {
-        return "Customer Focus";
+        return "Excellence";
     }
 }

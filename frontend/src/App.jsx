@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Briefcase, Target, ChevronRight, Edit3, CheckCircle2, ArrowRight, User, X, Search, Users, Star, Award } from 'lucide-react';
+import { Briefcase, Target, ChevronDown, ChevronRight, Edit3, CheckCircle2, ArrowRight, User, X, Search, Users, Star, Award, Info } from 'lucide-react';
 
 const CultureFitScorer = () => {
   // Industry Data
@@ -40,6 +40,11 @@ const CultureFitScorer = () => {
   const [candidateData, setCandidateData] = useState([]);
   const [dbRoles, setDbRoles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [industrySearchQuery, setIndustrySearchQuery] = useState('');
+  const [isIndustryDropdownOpen, setIsIndustryDropdownOpen] = useState(false);
+  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
+  const [showRolePopup, setShowRolePopup] = useState(false);
+  const [selectedRoleDetails, setSelectedRoleDetails] = useState(null);
 
   const functionalRoles = [
     { id: 'hr', name: 'HR' },
@@ -97,7 +102,7 @@ const CultureFitScorer = () => {
               ...score,
               culturalScores: [
                 score.normalizedTeamworkScore / 2,         // Teamwork
-                score.normalizedCommunicationScore / 2,    // Customer Focus (Mapping closest: Communication)
+                score.normalizedCommunicationScore / 2,    // Excellence (Mapping closest: Communication)
                 score.normalizedValuesAlignmentScore / 2, // Integrity (Mapping closest: Values)
                 score.normalizedAdaptabilityScore / 2,    // Innovation (Mapping closest: Adaptability)
                 score.normalizedOverallScore / 2          // Quality (Mapping closest: Overall)
@@ -169,18 +174,18 @@ const CultureFitScorer = () => {
           ...c,
           culturalScores: dbScore.culturalScores,
           fitScore: fitScore,
-          isAccepted: fitScore >= 60
+          isAccepted: fitScore >= 70
         };
       }
 
       const v = c.inputValues;
       const teamwork = (0.20 * v.emotion) + (0.20 * v.smile) + (0.10 * v.eyeContact) + (0.25 * v.tone) + (0.25 * v.pitch);
-      const customerFocus = (0.25 * v.emotion) + (0.25 * v.smile) + (0.20 * v.tone) + (0.20 * steadyRate(v.speechRate)) + (0.10 * v.eyeContact);
+      const excellenceValue = (0.25 * v.emotion) + (0.25 * v.smile) + (0.20 * v.tone) + (0.20 * steadyRate(v.speechRate)) + (0.10 * v.eyeContact);
       const integrity = (0.25 * v.emotion) + (0.25 * v.energy) + (0.25 * v.speechRate) + (0.25 * v.straightFace);
       const innovation = (0.30 * v.energy) + (0.30 * v.pitch) + (0.30 * v.speechRate) + (0.10 * v.emotion);
-      const excellence = (0.25 * v.tone) + (0.25 * v.pitch) + (0.15 * v.straightFace) + (0.15 * v.eyeContact) + (0.15 * v.fillerWords) + (0.05 * v.energy); // Quality
+      const excellenceValueCalc = (0.25 * v.tone) + (0.25 * v.pitch) + (0.15 * v.straightFace) + (0.15 * v.eyeContact) + (0.15 * v.fillerWords) + (0.05 * v.energy); // Quality
 
-      const rawScores = [teamwork, customerFocus, integrity, innovation, excellence];
+      const rawScores = [teamwork, excellenceValue, integrity, innovation, excellenceValueCalc];
       const scaledScores = rawScores.map(score => Math.max(1, Math.min(5, 1 + (score * 4))));
 
       const targetArea = calculatePolygonArea(currentTargets);
@@ -194,7 +199,7 @@ const CultureFitScorer = () => {
         ...c,
         culturalScores: scaledScores,
         fitScore: fitScore,
-        isAccepted: fitScore >= 60
+        isAccepted: fitScore >= 70
       };
     }).sort((a, b) => b.fitScore - a.fitScore);
   }, [candidateData, currentTargets, selectedIndustry, dbScores]);
@@ -327,26 +332,22 @@ const CultureFitScorer = () => {
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-xl text-white shadow-lg shadow-indigo-100">
-              <Briefcase size={22} strokeWidth={2.5} />
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
+              <img src="/logo.png" alt="Wezume Logo" className="h-16 w-auto object-contain" />
             </div>
-            <div>
-              <h1 className="text-xl font-extrabold text-slate-900 tracking-tight leading-none">Wezume</h1>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">Culture Match Engine</p>
+            <div className="flex flex-col justify-center border-l border-slate-100 pl-4 py-1">
+              <h1 className="text-xl font-extrabold text-slate-900 tracking-tight leading-none">Culture Fit</h1>
             </div>
-          </div>
-          <div className="hidden sm:flex items-center gap-4">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">Pro Edition</span>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6 sm:gap-8">
+      <main className={`flex-1 ${!selectedIndustry ? 'max-w-7xl' : 'max-w-full lg:px-12'} mx-auto w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6 sm:gap-8`}>
 
         {/* Phase 1: Selector */}
-        <div className={`transition-all duration-1000 ease-out ${!selectedIndustry ? 'flex-1 flex flex-col justify-center items-center py-12' : 'mb-4'}`}>
-          {!selectedIndustry && (
+        {!selectedIndustry && (
+          <div className="flex-1 flex flex-col justify-center items-center py-12">
             <div className="text-center mb-12 max-w-2xl px-4 animate-in fade-in slide-in-from-bottom-8 duration-1000">
               <div className="inline-block p-3 bg-indigo-50 text-indigo-600 rounded-2xl mb-6 shadow-sm border border-indigo-100">
                 <Target size={32} />
@@ -354,73 +355,120 @@ const CultureFitScorer = () => {
               <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-6 tracking-tight leading-[1.1]">Define Your <span className="text-indigo-600">Cultural Fit</span></h2>
               <p className="text-slate-500 text-lg sm:text-xl font-medium leading-relaxed">Select an industry to establish your baseline culture fit requirements and refine by functional area.</p>
             </div>
-          )}
 
-          {/* Functional Role Modifiers */}
-          <div className={`w-full max-w-4xl mx-auto transition-all duration-700 ${!selectedIndustry ? 'scale-100' : 'scale-95 opacity-90'}`}>
-            <div className="flex items-center gap-2 mb-4 justify-center">
-              <span className="h-[1px] w-8 bg-slate-200"></span>
-              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em]">Refine by Role</h3>
-              <span className="h-[1px] w-8 bg-slate-200"></span>
-            </div>
-            <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
-              <button
-                onClick={() => setSelectedRole(null)}
-                className={`px-5 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border shadow-sm ${
-                  selectedRole === null 
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-slate-200 scale-105' 
-                  : 'bg-white text-slate-500 border-slate-100 hover:border-slate-300 hover:text-slate-800'
-                }`}
-              >
-                None
-              </button>
-              {functionalRoles.map(role => (
+            <div className="relative w-full max-w-2xl mx-auto transition-all duration-700 mt-10">
+              <div className="relative">
                 <button
-                  key={role.id}
-                  onClick={() => setSelectedRole(role.id)}
-                  className={`px-5 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border shadow-sm ${
-                    selectedRole === role.id 
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-indigo-100 scale-105' 
-                    : 'bg-white text-slate-600 border-slate-100 hover:border-indigo-200 hover:text-indigo-600'
-                  }`}
+                  onClick={() => setIsIndustryDropdownOpen(!isIndustryDropdownOpen)}
+                  className="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl text-base font-bold text-slate-800 shadow-sm flex items-center justify-between hover:border-indigo-300 hover:shadow-md transition-all focus:ring-4 focus:ring-indigo-500/10"
                 >
-                  {role.name}
+                  <div className="flex items-center gap-3">
+                    <Search size={18} className="text-slate-400" />
+                    <span>{selectedIndustry ? industryProfiles[selectedIndustry].name : 'Search Sectors...'}</span>
+                  </div>
+                  <ChevronDown size={18} className={`text-slate-400 transition-transform ${isIndustryDropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
-              ))}
-            </div>
-            {selectedRole && (
-              <p className="text-center text-[10px] text-indigo-500 font-bold mt-5 animate-in fade-in slide-in-from-top-2 tracking-wide uppercase">
-                Optimized for: {roleDefinitions[selectedRole].name}
-              </p>
-            )}
-          </div>
 
-          <div className={`relative w-full mx-auto transition-all duration-700 mt-10 ${!selectedIndustry ? 'max-w-md' : 'max-w-sm'}`}>
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10 pointer-events-none">
-              <Target size={20} />
-            </div>
-            <select
-              value={selectedIndustry}
-              onChange={(e) => setSelectedIndustry(e.target.value)}
-              className="w-full pl-12 pr-12 py-4 bg-white border border-slate-200 rounded-2xl text-base font-bold text-slate-800 shadow-sm focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 appearance-none cursor-pointer transition-all hover:border-indigo-300 hover:shadow-md"
-            >
-              <option value="" disabled>Select Target Industry...</option>
-              {Object.entries(industryProfiles).map(([key, val]) => (
-                <option key={key} value={key}>{val.name}</option>
-              ))}
-            </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none transition-transform duration-300">
-              <ChevronRight size={18} className="rotate-90" />
+                {isIndustryDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl z-[60] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-[300px] flex flex-col">
+                    <div className="p-3 border-b border-slate-50">
+                      <input
+                        type="text"
+                        placeholder="Type to filter..."
+                        value={industrySearchQuery}
+                        onChange={(e) => setIndustrySearchQuery(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                        autoFocus
+                      />
+                    </div>
+                    <div className="overflow-y-auto flex-1 custom-scrollbar pb-2">
+                      {Object.entries(industryProfiles)
+                        .filter(([_, val]) => val.name.toLowerCase().includes(industrySearchQuery.toLowerCase()))
+                        .map(([key, val]) => (
+                          <button
+                            key={key}
+                            onClick={() => {
+                              setSelectedIndustry(key);
+                              setIsIndustryDropdownOpen(false);
+                              setIndustrySearchQuery('');
+                            }}
+                            className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors ${selectedIndustry === key ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                          >
+                            {val.name}
+                          </button>
+                        ))}
+                      {Object.entries(industryProfiles).filter(([_, val]) => val.name.toLowerCase().includes(industrySearchQuery.toLowerCase())).length === 0 && (
+                        <div className="p-8 text-center text-slate-400 text-xs font-bold uppercase tracking-widest">No matching sectors</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Phase 2: Main Workspace */}
         {selectedIndustry && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="flex flex-col gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 items-center mb-4 px-2 gap-4">
+              <div className="flex items-center justify-start">
+                 <button 
+                  onClick={() => setSelectedIndustry('')}
+                  className="flex items-center gap-2 text-slate-400 hover:text-indigo-600 font-bold transition-colors text-sm"
+                >
+                  <ArrowRight size={16} className="rotate-180" /> Change Sector: {industryProfiles[selectedIndustry].name}
+                </button>
+              </div>
+              <div className="flex justify-center">
+                <div className="relative w-80">
+                  <button
+                    onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
+                    className="w-full px-5 py-3.5 bg-white border border-slate-200 rounded-2xl text-[13px] font-bold text-slate-800 shadow-sm flex items-center justify-between hover:border-indigo-300 hover:shadow-md transition-all focus:ring-4 focus:ring-indigo-500/10"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Briefcase size={18} className="text-slate-400" />
+                      <span>{selectedRole ? functionalRoles.find(r => r.id === selectedRole)?.name : 'Role: None'}</span>
+                    </div>
+                    <ChevronDown size={18} className={`text-slate-400 transition-transform ${isRoleDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isRoleDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-100 rounded-2xl shadow-2xl z-[60] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="overflow-y-auto max-h-[300px] custom-scrollbar py-2">
+                        <button
+                          onClick={() => {
+                            setSelectedRole(null);
+                            setIsRoleDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors ${!selectedRole ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                        >
+                          None
+                        </button>
+                        {functionalRoles.map(role => (
+                          <button
+                            key={role.id}
+                            onClick={() => {
+                              setSelectedRole(role.id);
+                              setIsRoleDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors ${selectedRole === role.id ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                          >
+                            {role.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="hidden md:block"></div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
 
             {/* LEFT: Target Editor */}
-            <div className="lg:col-span-3 order-2 lg:order-1">
+            <div className="lg:col-span-4 order-2 lg:order-1">
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-6 sm:p-7 sticky top-24">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-base font-black text-slate-900 flex items-center gap-3">
@@ -429,11 +477,25 @@ const CultureFitScorer = () => {
                     </div>
                     Target area - org culture map
                   </h3>
-                  {isAccepted && (
-                    <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-100">
-                      <CheckCircle2 size={12} /> Locked
-                    </div>
-                  )}
+                  <div className="flex gap-2">
+                    {selectedRole && (
+                      <button 
+                        onClick={() => {
+                          setSelectedRoleDetails(roleDefinitions[selectedRole]);
+                          setShowRolePopup(true);
+                        }}
+                        className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
+                        title="Role Details"
+                      >
+                        <Info size={16} />
+                      </button>
+                    )}
+                    {isAccepted && (
+                      <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-100">
+                        <CheckCircle2 size={12} /> Locked
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {selectedIndustry === 'others' && (
@@ -447,7 +509,7 @@ const CultureFitScorer = () => {
                 )}
 
                 <div className="space-y-6">
-                  {['Teamwork', 'Customer Focus', 'Integrity', 'Innovation', 'Quality'].map((trait, index) => (
+                  {['Teamwork', 'Excellence', 'Integrity', 'Innovation', 'Quality'].map((trait, index) => (
                     <div key={trait} className="group">
                       <div className="flex justify-between items-center mb-2.5">
                         <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-widest group-hover:text-indigo-600 transition-colors">{trait}</span>
@@ -483,7 +545,7 @@ const CultureFitScorer = () => {
             </div>
 
             {/* MIDDLE: Visualization */}
-            <div className="lg:col-span-5 order-1 lg:order-2">
+            <div className="lg:col-span-4 order-1 lg:order-2">
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl shadow-slate-200/60 border border-slate-100 p-6 sm:p-8 flex flex-col items-center relative overflow-hidden h-full min-h-[500px]">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-blue-500 to-indigo-500 opacity-50"></div>
                 <div className="absolute inset-x-0 -top-24 h-64 bg-indigo-50/30 blur-[100px] rounded-full"></div>
@@ -500,7 +562,7 @@ const CultureFitScorer = () => {
                   </div>
                   {selectedCandidate && (
                     <div className="bg-slate-900 rounded-2xl px-5 py-3 shadow-xl shadow-slate-200">
-                    <div className={`text-3xl font-black tabular-nums transition-colors duration-500 ${selectedCandidate.fitScore >= 60 ? 'text-emerald-400' : 'text-indigo-400'}`}>
+                    <div className={`text-3xl font-black tabular-nums transition-colors duration-500 ${selectedCandidate.fitScore >= 70 ? 'text-emerald-400' : 'text-indigo-400'}`}>
                         {selectedCandidate.fitScore.toFixed(0)}%
                       </div>
                       <p className="text-[8px] text-slate-500 font-black uppercase tracking-widest mt-0.5">Overlap Score</p>
@@ -513,7 +575,7 @@ const CultureFitScorer = () => {
                   <RadarChartCustom
                     targetScores={currentTargets}
                     candidateScores={selectedCandidate ? selectedCandidate.culturalScores : null}
-                    labels={['Teamwork', 'Focus', 'Integrity', 'Innovation', 'Quality']}
+                    labels={['Teamwork', 'Excellence', 'Integrity', 'Innovation', 'Quality']}
                   />
                 </div>
 
@@ -620,7 +682,7 @@ const CultureFitScorer = () => {
                       </div>
                       <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-4">
-                          {['Teamwork', 'Focus', 'Integrity', 'Innovation', 'Quality'].map((trait, i) => (
+                          {['Teamwork', 'Excellence', 'Integrity', 'Innovation', 'Quality'].map((trait, i) => (
                             <div key={trait}>
                               <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                                 <span>{trait}</span>
@@ -641,7 +703,7 @@ const CultureFitScorer = () => {
                             <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Authenticity</p>
                             <p className="text-lg font-black text-white">{((selectedCandidate.inputValues.straightFace + selectedCandidate.inputValues.eyeContact) / 2 * 100).toFixed(0)}%</p>
                           </div>
-                        </div>Detail Diagnostics
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -649,10 +711,56 @@ const CultureFitScorer = () => {
               </div>
             </div>
 
+            </div>
           </div>
         )}
 
       </main>
+
+      {/* Role Details Popup */}
+      {showRolePopup && selectedRoleDetails && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="bg-slate-900 p-8 text-white relative">
+              <button 
+                onClick={() => setShowRolePopup(false)}
+                className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-xl transition-colors"
+              >
+                <X size={20} />
+              </button>
+              <h3 className="text-3xl font-black tracking-tight mb-2">{selectedRoleDetails.name}</h3>
+              <p className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em]">Role-Based Culture Profile</p>
+            </div>
+            <div className="p-8">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-4">Trait Adjustments (vs Industry Baseline)</h4>
+                  <div className="space-y-3">
+                    {['Teamwork', 'Excellence', 'Integrity', 'Innovation', 'Quality'].map((trait, i) => (
+                      <div key={trait} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                        <span className="text-xs font-bold text-slate-700">{trait}</span>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg ${selectedRoleDetails.offset[i] > 0 ? 'bg-emerald-100 text-emerald-600' : selectedRoleDetails.offset[i] < 0 ? 'bg-rose-100 text-rose-600' : 'bg-slate-200 text-slate-500'}`}>
+                            {selectedRoleDetails.offset[i] > 0 ? `+${selectedRoleDetails.offset[i]}` : selectedRoleDetails.offset[i]}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="pt-6 border-t border-slate-100">
+                  <button 
+                    onClick={() => setShowRolePopup(false)}
+                    className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-[13px] uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100"
+                  >
+                    Got it
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
